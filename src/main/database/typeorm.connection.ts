@@ -8,7 +8,6 @@ export class TypeormConnection {
     this._connection = await config.initialize();
     console.log("Typeorm is ready.");
   }
-
   public static get connection() {
     return this._connection;
   }
