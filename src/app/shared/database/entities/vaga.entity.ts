@@ -4,9 +4,11 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToMany,
   PrimaryColumn,
 } from "typeorm";
 import { UsuarioEntity } from "./usuario.entity";
+import { Recrutador } from "../../../models/recrutador.model";
 
 @Entity("vaga")
 export class VagaEntity {
@@ -16,9 +18,7 @@ export class VagaEntity {
   @Column()
   descricao: string;
 
-  @Column({
-    name: "nome_empresa",
-  })
+  @Column()
   nomeEmpresa: string;
 
   @Column({
@@ -35,6 +35,7 @@ export class VagaEntity {
   @Column({
     name: "max_candidatos",
     nullable: true,
+    type: "int4",
   })
   maxCandidatos: number;
 

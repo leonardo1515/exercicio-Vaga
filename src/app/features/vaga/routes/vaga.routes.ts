@@ -1,18 +1,16 @@
 import { Router } from "express";
+import { VagaController } from "../controllers/vaga.controller";
 import { checkLoginValidator } from "../../login/validators/check-login.validator";
-import { VagaController } from "../controller/vaga.controller";
-import { checkLoginRecrutadorValidator } from "../../recrutador/validators/check-login-recrutador";
+import { checkRecrutadorValidator } from "../../recrutador/validators/check-recrutador.validator";
 
 export const vagaRoutes = () => {
   const router = Router();
 
-  router.get("/", new VagaController().list);
+  router.get("/", new VagaController().listAllVagas);
+  router.get("/:idVaga", new VagaController().getVaga);
   router.post(
     "/",
-    [
-      checkLoginValidator,
-      checkLoginRecrutadorValidator,
-    ],
+    [checkLoginValidator, checkRecrutadorValidator],
     new VagaController().create
   );
 

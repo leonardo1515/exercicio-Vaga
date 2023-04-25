@@ -1,28 +1,24 @@
 import { Router } from "express";
+import { CandidaturaController } from "../controllers/candidatura.controller";
 import { checkLoginValidator } from "../../login/validators/check-login.validator";
-import { CandidaturaController } from "../controller/candidatura.controller";
-import { checkLoginCandidatoValidator } from "../../candidatos/validators/check-login-candidato-validator";
+import { checkLoginCandidatoValidator } from "../../candidato/validators/check-login-candidato.validator";
 
 export const candidaturaRoutes = () => {
   const router = Router();
 
   router.post(
     "/",
-    [
-      checkLoginValidator,
-      checkLoginCandidatoValidator,
-    ],
+    [checkLoginValidator, checkLoginCandidatoValidator],
     new CandidaturaController().create
   );
 
   router.get(
     "/",
-    [
-      checkLoginValidator,
-      checkLoginCandidatoValidator,
-    ],
+    [checkLoginValidator, checkLoginCandidatoValidator],
     new CandidaturaController().listCandidaturas
   );
+
+  router.get("/listagem", new CandidaturaController().listAllCandidaturas);
 
   return router;
 };

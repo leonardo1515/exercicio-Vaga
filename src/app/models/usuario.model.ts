@@ -1,4 +1,4 @@
-import { v4 as createuuid } from "uuid";
+import { v4 as createUuid } from "uuid";
 
 export enum TipoUsuario {
   Admin = "A",
@@ -16,7 +16,7 @@ export class Usuario {
     public tipo: TipoUsuario,
     public nomeEmpresa?: string
   ) {
-    this._id = createuuid();
+    this._id = createUuid();
   }
 
   public static create(
@@ -27,13 +27,7 @@ export class Usuario {
     tipo: TipoUsuario,
     nomeEmpresa?: string
   ) {
-    const usuario = new Usuario(
-      nome,
-      username,
-      password,
-      tipo,
-      nomeEmpresa
-    );
+    const usuario = new Usuario(nome, username, password, tipo, nomeEmpresa);
 
     usuario._id = id;
     return usuario;
@@ -41,5 +35,15 @@ export class Usuario {
 
   public get id() {
     return this._id;
+  }
+
+  public toJson() {
+    return {
+      _id: this._id,
+      nome: this.nome,
+      username: this.username,
+      password: this.password,
+      tipo: this.tipo,
+    };
   }
 }

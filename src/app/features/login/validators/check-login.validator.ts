@@ -1,8 +1,4 @@
-import {
-  NextFunction,
-  Request,
-  Response,
-} from "express";
+import { NextFunction, Request, Response } from "express";
 import { ApiError } from "../../../shared/errors/api.error";
 import { JwtAdapter } from "../../../shared/util/jwt.adapter";
 
@@ -23,8 +19,7 @@ export const checkLoginValidator = (
     }
 
     const usuario = JwtAdapter.checkToken(token);
-    req.headers["usuario"] =
-      JSON.stringify(usuario);
+    req.headers["usuario"] = JSON.stringify(usuario);
 
     return next();
   } catch (error: any) {

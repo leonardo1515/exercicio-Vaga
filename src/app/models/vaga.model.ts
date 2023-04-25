@@ -1,5 +1,5 @@
 import { Recrutador } from "./recrutador.model";
-import { v4 as createuuid } from "uuid";
+import { v4 as createUuid } from "uuid";
 
 export class Vaga {
   private _id: string;
@@ -12,8 +12,9 @@ export class Vaga {
     public recrutador: Recrutador,
     public maxCandidatos?: number
   ) {
-    this._id = createuuid();
+    this._id = createUuid();
   }
+
   public get id() {
     return this._id;
   }
@@ -35,8 +36,8 @@ export class Vaga {
       recrutador,
       maxCandidatos
     );
-    vaga._id = id;
 
+    vaga._id = id;
     return vaga;
   }
 }

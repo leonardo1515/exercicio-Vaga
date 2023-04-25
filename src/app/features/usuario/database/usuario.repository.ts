@@ -1,50 +1,56 @@
 import { TypeormConnection } from "../../../../main/database/typeorm.connection";
-import {
-  TipoUsuario,
-  Usuario,
-} from "../../../models/usuario.model";
+import { TipoUsuario, Usuario } from "../../../models/usuario.model";
 import { UsuarioEntity } from "../../../shared/database/entities/usuario.entity";
+
+interface GetParams {
+  username: string;
+  password?: string;
+  tipo?: TipoUsuario;
+}
 
 export class UsuarioRepository {
   private repository =
-    TypeormConnection.connection.getRepository(
-      UsuarioEntity
-    );
+    TypeormConnection.connection.getRepository(UsuarioEntity);
 
-  public async getByUsername(
+  public async getByUsernameAndType(
     username: string,
-    password?: string
+    tipo: TipoUsuario
   ): Promise<Usuario | null> {
-    const result =
-      await this.repository.findOneBy({
-        username,
-        password,
-      });
-
+    const result = await this.repository.findOneBy({
+      username,
+      tipo,
+    });
     if (!result) {
       return null;
     }
 
-    return UsuarioRepository.mapEntityToModel(
-      result
-    );
+    return UsuarioRepository.mapEntityToModel(result);
   }
 
-  public async get(
-    id: string
-  ): Promise<Usuario | null> {
-    const result =
-      await this.repository.findOneBy({
-        id,
-      });
+  public async getByUsername(params: GetParams): Promise<Usuario | null> {
+    const result = await this.repository.findOneBy({
+      username: params.username,
+      password: params.password,
+      tipo: params.tipo,
+    });
 
     if (!result) {
       return null;
     }
 
-    return UsuarioRepository.mapEntityToModel(
-      result
-    );
+    return UsuarioRepository.mapEntityToModel(result);
+  }
+
+  public async get(id: string): Promise<Usuario | null> {
+    const result = await this.repository.findOneBy({
+      id,
+    });
+
+    if (!result) {
+      return null;
+    }
+
+    return UsuarioRepository.mapEntityToModel(result);
   }
 
   public async create(usuario: Usuario) {
@@ -52,18 +58,12 @@ export class UsuarioRepository {
       id: usuario.id,
       nome: usuario.nome,
       username: usuario.username,
-      password: usuario.password,
       nomeEmpresa: usuario.nomeEmpresa,
+      password: usuario.password,
       tipo: usuario.tipo,
     });
 
-    const result = await this.repository.save(
-      usuarioEntity
-    );
-
-    return UsuarioRepository.mapEntityToModel(
-      result
-    );
+    await this.repository.save(usuarioEntity);
   }
 
   public async list(tipo?: TipoUsuario) {
@@ -71,14 +71,10 @@ export class UsuarioRepository {
       tipo,
     });
 
-    return result.map((usuario) =>
-      UsuarioRepository.mapEntityToModel(usuario)
-    );
+    return result.map((item) => UsuarioRepository.mapEntityToModel(item));
   }
 
-  public static mapEntityToModel(
-    entity: UsuarioEntity
-  ): Usuario {
+  public static mapEntityToModel(entity: UsuarioEntity): Usuario {
     return Usuario.create(
       entity.id,
       entity.nome,

@@ -1,4 +1,5 @@
-import { Candidatura } from "../../../models/candidatura.model";
+import { Candidatura } from "../../../models/candidatura.models";
+import { CacheRepository } from "../../../shared/database/repositories/cache.repository";
 import { Return } from "../../../shared/util/return.contract";
 import { UsuarioRepository } from "../../usuario/database/usuario.repository";
 import { VagaRepository } from "../../vaga/database/vaga.repository";
@@ -11,14 +12,9 @@ interface AplicacaoParams {
 }
 
 export class AplicacaoUsecase {
-  public async execute(
-    data: AplicacaoParams
-  ): Promise<Return> {
-    const usuarioRepository =
-      new UsuarioRepository();
-    const candidato = await usuarioRepository.get(
-      data.idCandidato
-    );
+  public async execute(data: AplicacaoParams): Promise<Return> {
+    const usuarioRepository = new UsuarioRepository();
+    const candidato = await usuarioRepository.get(data.idCandidato);
 
     if (!candidato) {
       return {
@@ -29,9 +25,7 @@ export class AplicacaoUsecase {
     }
 
     const vagasRepository = new VagaRepository();
-    const vaga = await vagasRepository.get(
-      data.idVaga
-    );
+    const vaga = await vagasRepository.get(data.idVaga);
 
     if (!vaga) {
       return {
@@ -40,69 +34,42 @@ export class AplicacaoUsecase {
         message: "Vaga não encontrada",
       };
     }
-    const result =
-      AplicacaoValidator.validateVaga(vaga);
+    const result = AplicacaoValidator.validateVaga(vaga);
     if (!result.ok) {
       return result;
     }
 
-    const repository =
-      new CandidaturaRepository();
+    const repository = new CandidaturaRepository();
 
-    const candidatos = await repository.list(
-      vaga.id
-    );
+    const candidatos = await repository.listByVaga({ idVaga: vaga.id });
 
     if (vaga.maxCandidatos) {
-      if (
-        candidatos.length >= vaga.maxCandidatos
-      ) {
+      if (candidatos.length >= vaga.maxCandidatos) {
         return {
           ok: false,
           code: 400,
-          message:
-            "Já alcançou o limite de candidaturas.",
+          message: "Já alcançou o limite de candidaturas.",
         };
       }
     }
 
-    // if (
-    //     candidatos.some(
-    //         (candidatura) => candidatura.candidato.id === data.idCandidato
-    //     )
-    // ) {
-    //     return {
-    //         ok: false,
-    //         code: 400,
-    //         message: "Você já se candidatou à esta vaga.",
-    //     };
-    // }
-    if (
-      AplicacaoValidator.candidaturaDuplicada(
-        candidatos,
-        data.idCandidato
-      )
-    ) {
+    if (AplicacaoValidator.candidaturaDuplicada(candidatos, data.idCandidato)) {
       return {
         ok: false,
         code: 400,
-        message:
-          "Você já se candidatou à esta vaga.",
+        message: "Você já se candidatou à esta vaga.",
       };
     }
 
-    const newCandidatura = new Candidatura(
-      new Date(),
-      false,
-      candidato,
-      vaga
-    );
+    const newCandidatura = new Candidatura(new Date(), false, candidato, vaga);
     await repository.create(newCandidatura);
+    await new CacheRepository().delete(`listaCandidatura:${data.idCandidato}`);
+    await new CacheRepository().delete(`listaCandidaturas`);
+
     return {
       ok: true,
       code: 201,
-      message:
-        "Você se candidatou a vaga com sucesso",
+      message: "Você se candidatou a vaga com sucesso",
     };
   }
 }

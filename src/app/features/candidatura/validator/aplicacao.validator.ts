@@ -1,19 +1,11 @@
 import { Candidato } from "../../../models/candidato.model";
-import { Candidatura } from "../../../models/candidatura.model";
+import { Candidatura } from "../../../models/candidatura.models";
 import { Vaga } from "../../../models/vaga.model";
 import { Return } from "../../../shared/util/return.contract";
 
 export class AplicacaoValidator {
-  public static candidaturaDuplicada(
-    candidatos: Candidatura[],
-    id: string
-  ) {
-    if (
-      candidatos.some(
-        (candidatura) =>
-          candidatura.candidato.id === id
-      )
-    ) {
+  public static candidaturaDuplicada(candidatos: Candidatura[], id: string) {
+    if (candidatos.some((candidatura) => candidatura.candidato.id === id)) {
       return true;
     }
 

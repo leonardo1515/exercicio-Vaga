@@ -1,19 +1,7 @@
-import {
-  TipoUsuario,
-  Usuario,
-} from "./usuario.model";
+import { TipoUsuario, Usuario } from "./usuario.model";
 
 export class Candidato extends Usuario {
-  constructor(
-    public nome: string,
-    public username: string,
-    public password: string
-  ) {
-    super(
-      nome,
-      username,
-      password,
-      TipoUsuario.Candidato
-    );
+  constructor(nome: string, username: string, password: string) {
+    super(nome, username, password, TipoUsuario.Candidato);
   }
 }

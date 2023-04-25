@@ -4,11 +4,13 @@ import {
   Entity,
   OneToMany,
   PrimaryColumn,
+  Unique,
 } from "typeorm";
 import { TipoUsuario } from "../../../models/usuario.model";
 import { VagaEntity } from "./vaga.entity";
 
 @Entity("usuario")
+@Unique("unique_username", ["username", "tipo"])
 export class UsuarioEntity {
   @PrimaryColumn()
   id: string;
@@ -16,9 +18,7 @@ export class UsuarioEntity {
   @Column()
   nome: string;
 
-  @Column({
-    unique: true,
-  })
+  @Column()
   username: string;
 
   @Column({

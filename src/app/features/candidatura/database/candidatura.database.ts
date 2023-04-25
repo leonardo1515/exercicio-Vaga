@@ -1,25 +1,35 @@
 import { TypeormConnection } from "../../../../main/database/typeorm.connection";
-import { Candidatura } from "../../../models/candidatura.model";
+import { Candidatura } from "../../../models/candidatura.models";
 import { CandidaturaEntity } from "../../../shared/database/entities/candidatura.entity";
 import { UsuarioRepository } from "../../usuario/database/usuario.repository";
 import { VagaRepository } from "../../vaga/database/vaga.repository";
 
+interface CandidaturaParams {
+  idVaga?: string;
+  idCandidato?: string;
+}
+
 export class CandidaturaRepository {
   private repository =
-    TypeormConnection.connection.getRepository(
-      CandidaturaEntity
-    );
-  public async list(idVaga: string) {
+    TypeormConnection.connection.getRepository(CandidaturaEntity);
+  public async listByVaga(params: CandidaturaParams) {
     const result = await this.repository.find({
       where: {
-        idVaga,
+        idVaga: params.idVaga,
+        idCandidato: params.idCandidato,
       },
-      relations: ["candidato", "vagas"],
+      relations: ["candidato", "vaga", "vaga.recrutador"],
     });
 
-    return result.map((item) =>
-      this.mapEntityToModel(item)
-    );
+    return result.map((item) => this.mapEntityToModel(item));
+  }
+
+  public async listAll() {
+    const result = await this.repository.find({
+      relations: ["candidato", "vaga", "vaga.recrutador"],
+    });
+
+    return result.map((item) => this.mapEntityToModel(item));
   }
 
   public async getById(idCandidato: string) {
@@ -33,21 +43,12 @@ export class CandidaturaRepository {
       },
     });
 
-    return result.map((item) =>
-      this.mapEntityToModel(item)
-    );
+    return result.map((item) => this.mapEntityToModel(item));
   }
 
-  public mapEntityToModel(
-    entity: CandidaturaEntity
-  ): Candidatura {
-    const candidato =
-      UsuarioRepository.mapEntityToModel(
-        entity.candidato
-      );
-    const vaga = VagaRepository.mapEntityToModel(
-      entity.vaga
-    );
+  public mapEntityToModel(entity: CandidaturaEntity): Candidatura {
+    const candidato = UsuarioRepository.mapEntityToModel(entity.candidato);
+    const vaga = VagaRepository.mapEntityToModel(entity.vaga);
     return Candidatura.create(
       entity.id,
       entity.dtCadastro,

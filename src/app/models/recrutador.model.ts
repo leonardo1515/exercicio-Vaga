@@ -1,21 +1,12 @@
-import {
-  TipoUsuario,
-  Usuario,
-} from "./usuario.model";
+import { TipoUsuario, Usuario } from "./usuario.model";
 
 export class Recrutador extends Usuario {
   constructor(
-    public nome: string,
-    public username: string,
-    public password: string,
+    nome: string,
+    username: string,
+    password: string,
     nomeEmpresa: string
   ) {
-    super(
-      nome,
-      username,
-      password,
-      TipoUsuario.Recrutador,
-      nomeEmpresa
-    );
+    super(nome, username, password, TipoUsuario.Recrutador, nomeEmpresa);
   }
 }

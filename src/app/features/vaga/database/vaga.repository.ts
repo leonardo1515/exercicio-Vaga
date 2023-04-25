@@ -4,10 +4,7 @@ import { VagaEntity } from "../../../shared/database/entities/vaga.entity";
 import { UsuarioRepository } from "../../usuario/database/usuario.repository";
 
 export class VagaRepository {
-  private repository =
-    TypeormConnection.connection.getRepository(
-      VagaEntity
-    );
+  private repository = TypeormConnection.connection.getRepository(VagaEntity);
 
   public async create(vaga: Vaga) {
     const vagaEntity = this.repository.create({
@@ -28,9 +25,7 @@ export class VagaRepository {
       relations: ["recrutador"],
     });
 
-    return result.map((item) =>
-      VagaRepository.mapEntityToModel(item)
-    );
+    return result.map((item) => VagaRepository.mapEntityToModel(item));
   }
 
   public async get(id: string) {
@@ -45,18 +40,11 @@ export class VagaRepository {
       return null;
     }
 
-    return VagaRepository.mapEntityToModel(
-      result
-    );
+    return VagaRepository.mapEntityToModel(result);
   }
 
-  public static mapEntityToModel(
-    entity: VagaEntity
-  ): Vaga {
-    const recrutador =
-      UsuarioRepository.mapEntityToModel(
-        entity.recrutador
-      );
+  public static mapEntityToModel(entity: VagaEntity): Vaga {
+    const recrutador = UsuarioRepository.mapEntityToModel(entity.recrutador);
 
     const vaga = Vaga.create(
       entity.id,
@@ -67,6 +55,7 @@ export class VagaRepository {
       recrutador,
       entity.maxCandidatos
     );
+
     return vaga;
   }
 }

@@ -1,4 +1,5 @@
 import { Recrutador } from "../../../models/recrutador.model";
+import { CacheRepository } from "../../../shared/database/repositories/cache.repository";
 import { Return } from "../../../shared/util/return.contract";
 import { UsuarioRepository } from "../../usuario/database/usuario.repository";
 
@@ -10,45 +11,28 @@ interface CreateRecrutadorParams {
 }
 
 export class CreateRecrutadorUsecase {
-  public async execute(
-    data: CreateRecrutadorParams
-  ): Promise<Return> {
-    // validar usuario existe (username)
-
+  public async execute(data: CreateRecrutadorParams): Promise<Return> {
+    // 1 - Validar se o usuario ja existe (username)
     const repository = new UsuarioRepository();
-    const usuario =
-      await repository.getByUsername(
-        data.username
-      );
 
-    if (usuario !== null) {
-      return {
-        ok: false,
-        code: 400,
-        message: "Usuario já existe",
-      };
-    }
-    // criar model recrutador
-
+    // 2 - criar model Recrutador
     const recrutador = new Recrutador(
       data.nome,
       data.username,
       data.password,
       data.nomeEmpresa
     );
+    // 3 - salvar o usuario no DB
 
-    // salvar usuario no BD
+    const result = await repository.create(recrutador);
+    // 4 - retornar o usuario criado
 
-    const result = await repository.create(
-      recrutador
-    );
-
-    // reotrnar user criado
+    await new CacheRepository().delete(`listaRecrutadores`);
 
     return {
       ok: true,
       code: 201,
-      message: "Usuario criado com sucesso",
+      message: "Usuário criado com sucesso!",
       data: result,
     };
   }

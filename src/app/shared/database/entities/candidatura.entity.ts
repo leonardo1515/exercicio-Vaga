@@ -6,9 +6,8 @@ import {
   ManyToOne,
   PrimaryColumn,
 } from "typeorm";
-
-import { UsuarioEntity } from "./usuario.entity";
 import { VagaEntity } from "./vaga.entity";
+import { UsuarioEntity } from "./usuario.entity";
 
 @Entity("candidatura")
 export class CandidaturaEntity {
@@ -36,15 +35,15 @@ export class CandidaturaEntity {
   })
   idVaga: string;
 
-  @ManyToOne(() => UsuarioEntity)
-  @JoinColumn({
-    name: "id_candidato",
-  })
-  candidato: UsuarioEntity;
-
   @ManyToOne(() => VagaEntity)
   @JoinColumn({
     name: "id_vaga",
   })
   vaga: VagaEntity;
+
+  @ManyToOne(() => UsuarioEntity)
+  @JoinColumn({
+    name: "id_candidato",
+  })
+  candidato: UsuarioEntity;
 }
